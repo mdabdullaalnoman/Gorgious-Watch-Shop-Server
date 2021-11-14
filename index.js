@@ -73,7 +73,7 @@ async function run() {
         });
 
 
-        console.log('data base connected');
+        console.log('data base connected reconected');
 
 
 
