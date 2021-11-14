@@ -3,6 +3,7 @@ const app = express();
 const { MongoClient } = require("mongodb");
 const cors = require('cors');
 const objectId = require('mongodb').ObjectId;
+const { application } = require('express');
 require('dotenv').config();
 
 
@@ -25,6 +26,7 @@ async function run() {
         const database = client.db("gorgeous_watch_shop");
         const watchesCollection = database.collection("watches");
         const parchesCollection = database.collection("parches");
+        const reviewCollection = database.collection("review");
 
         // get all watches info -------------------------------------
         app.get('/watches', async (req, res) => {
@@ -57,6 +59,18 @@ async function run() {
             res.send(result);
         });
 
+        // post review info --------------------------------------
+        app.post('/review', async (req, res) => {
+            const Review = req.body;
+            const result = await reviewCollection.insertOne(Review);
+            res.json(result);
+        });
+        // get review info-----------------------------------------
+        app.get('/review' , async (req , res) => {
+            const reviewData = reviewCollection.find({});
+            const result = await reviewData.toArray();
+            res.json(result);
+        });
 
 
         console.log('data base connected');
