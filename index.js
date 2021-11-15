@@ -27,6 +27,7 @@ async function run() {
         const watchesCollection = database.collection("watches");
         const parchesCollection = database.collection("parches");
         const reviewCollection = database.collection("review");
+        const userCollection = database.collection("users");
 
         // get all watches info -------------------------------------
         app.get('/watches', async (req, res) => {
@@ -34,6 +35,13 @@ async function run() {
             const watchesData = await data.toArray();
             res.json(watchesData);
         });
+
+        // post watches data ------------------------------------------
+        app.post('/watches', async (req, res) => {
+            const watchData = req.body;
+            const result = await watchesCollection.insertOne(watchData);
+            res.json(result);
+          });
 
         // post parches data ----------------------------------------
         app.post('/parches', async (req, res) => {
@@ -66,11 +74,51 @@ async function run() {
             res.json(result);
         });
         // get review info-----------------------------------------
-        app.get('/review' , async (req , res) => {
+        app.get('/review', async (req, res) => {
             const reviewData = reviewCollection.find({});
             const result = await reviewData.toArray();
             res.json(result);
         });
+
+        // save user registration data on mongo db data base---------------------------------
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            res.json(result);
+        });
+        // user upsert(if user already exits dont save user info other wise data will be saved)=================
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = { $set: user };
+            const options = { upsert: true };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        // make admin -----------------------------
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        });
+
+        // check is make admin email is admin or not -------------------------------
+
+        app.get('/users/:email' , async(req , res) => {
+            const email = req.params.email;
+            const query = {email: email};
+            const user = await userCollection.findOne(query);
+            let isAdmin = false;
+            if(user?.role === 'admin'){
+                isAdmin = true;
+            }
+            res.json({admin: isAdmin});
+
+        })
+
 
 
         console.log('data base connected reconected data');
