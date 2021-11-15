@@ -141,5 +141,5 @@ app.get('/', (req, res) => {
 })
 // listening port -----------------------------------------
 app.listen(port, () => {
-    console.log('listening port', port);
+    console.log('listening ports', port);
 });
