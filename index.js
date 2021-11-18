@@ -66,6 +66,12 @@ async function run() {
             const result = await parchesCollection.deleteOne(query);
             res.send(result);
         });
+        app.get('/parches/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: objectId(id) };
+            const result = await parchesCollection.findOne(query);
+            res.send(result);
+        });
 
         // post review info --------------------------------------
         app.post('/review', async (req, res) => {
